@@ -35,6 +35,7 @@ void Dijkstra(int u)
                       if(cost+dis[x]<dis[current_node]){
                                    dis[current_node] = cost+dis[x];
                                    pq.push({-1*dis[current_node], current_node});
+                                   parent[current_node] = x;
                       }
             }
     }
@@ -71,5 +72,6 @@ int main()
             printf("%lld ", dis[i]);
     }
     printf("\n");
+
     return 0;
 }
