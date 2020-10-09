@@ -38,16 +38,6 @@ ll get_hashval(string str)
     }
     return hash_val;
 }
-ll get_hashval2(string str)
-{
-    int len=str.length();
-    ll hash_val=0;
-    for(int i=0; i<len; i++)
-    {
-        hash_val=((hash_val*base)+str[i])%mod;
-    }
-    return hash_val;
-}
 ll SubstringHash(int l, int r)
 {
     return (HASH[r] - (HASH[l-1]*pw[r-l+1])%mod + mod) % mod;
@@ -68,8 +58,8 @@ int main()
 
     ll str_len = str.size();
     ll pattern_len = pattern.size();
+    ll pattern_hash = get_hashval(pattern);
     ll str_hash = get_hashval(str);
-    ll pattern_hash = get_hashval2(pattern);
     ll ret = 0;
 
     for(ll i=1; i+pattern_len-1<=str_len; i++){
