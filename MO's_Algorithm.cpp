@@ -1,6 +1,7 @@
 /*
      Problem Link: https://cses.fi/problemset/task/1734
 */
+
 #include<bits/stdc++.h>
 #include<cstring>
 //#define Mfc_Tanzim
@@ -21,13 +22,17 @@ const ll mx = 1e6+7;
 ll posx[] = {1,-1, 0, 0};
 ll posy[] = {0, 0, 1,-1};
 int arr[200009], res[200009], mp[200009];
-vector<pair<int, pair<int, int> > > mo;
 vector<pair<int, int> >arr2;
 int left_pos, right_pos, cnt, c, sz = 1000;
 
+struct Info{
+    ll l, r, idx;
+}mo[200009];
+
 void add(int x)
 {
-    if(!mp[x])
+    ll k = mp[x];
+    if(!k)
         cnt ++;
     mp[x]++;
 }
@@ -41,36 +46,27 @@ int query(int l,int r)
 {
     while(right_pos < r)
     {
-        right_pos++;
-        add(arr[right_pos]);
+        right_pos++, add(arr[right_pos]);
     }
     while(right_pos > r)
     {
-        del(arr[right_pos]);
-        right_pos--;
+        del(arr[right_pos]), right_pos--;
     }
     while(left_pos < l)
     {
-        del(arr[left_pos]);
-        left_pos++;
+        del(arr[left_pos]), left_pos++;
     }
     while(left_pos > l)
     {
-        left_pos--;
-        add(arr[left_pos]);
+        left_pos--, add(arr[left_pos]);
     }
     return cnt;
 }
-bool cmp(const pair<int, pair<int, int> >a, const pair<int, pair<int, int> >b)
+bool cmp(Info a, Info b)
 {
-    if((a.ff/sz)<(b.ff/sz))
-        return 1;
-    if((a.ff/sz)>(b.ff/sz))
-        return 0;
-    if(a.ss.ff<b.ss.ff)
-        return 1;
-    else
-        return 0;
+    if((a.l/sz)==(b.l/sz))
+           return a.r<b.r;
+    return (a.l/sz)<(b.l/sz);
 }
 
 int main()
@@ -82,7 +78,7 @@ int main()
     // freopen("output.txt","w", stdout);
 #endif /// Mfc_Tanzim
 
-    int t=1, n, k, m, a, b, c, d;
+    int t=1, n, k, m, a, b, c, d, left, right;
     //cin >> t;
 
     while(t--)
@@ -95,38 +91,36 @@ int main()
         }
         sort (arr2.begin(), arr2.end());
 
-        ///Array_Compression
         arr[arr2[0].ss] = ++c;
         for(int i=1; i<n; i++)
         {
             if(arr2[i].ff!=arr2[i-1].ff)
-            {
                     arr[arr2[i].ss] = ++c;
-            }
-            else{
+            else
                     arr[arr2[i].ss] = arr[arr2[i-1].ss];
-            }
         }
 
-        ///MO's Algorithm
-        for(int i=1; i<=k; i++)
+        for(int i=0; i<k; i++)
         {
-            scanf("%d %d", &a, &b);
-            mo.pb({a, {b, i}});
+            scanf("%d %d", &left, &right);
+            mo[i].l = left;
+            mo[i].r = right;
+            mo[i].idx = i;
         }
-        sort (mo.begin(), mo.end(), cmp);
+        sort (mo, mo+k, cmp);
+        ///M0's Algo
 
-        left_pos = mo[0].ff, right_pos = mo[0].ss.ff;
+        left_pos = mo[0].l, right_pos = mo[0].r;
         for(int i=left_pos; i<=right_pos; i++)
         {
             add(arr[i]);
         }
-        res[mo[0].ss.ss] = cnt;
-        for(int i=1; i<mo.size(); i++)
+        res[mo[0].idx] = cnt;
+        for(int i=1; i<k; i++)
         {
-            res[mo[i].ss.ss]=query(mo[i].ff, mo[i].ss.ff);
+            res[mo[i].idx]=query(mo[i].l, mo[i].r);
         }
-        for(int i=1; i<=k; i++)
+        for(int i=0; i<k; i++)
         {
             printf("%d\n", res[i]);
         }
