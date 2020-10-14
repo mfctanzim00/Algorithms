@@ -1,5 +1,5 @@
 /*
-     Problem Link : http://lightoj.com/volume_showproblem.php?problem=1074
+      Problem Link : https://cses.fi/problemset/task/1197/
 */
 
 #include<bits/stdc++.h>
@@ -25,13 +25,15 @@ struct Info
     ll u, v, cost;
 };
 vector<Info>graph;
-ll arr[1000], dis[1000], edges, nodes, query, cs;
+
+ll parent[3000], dis[3000], edges, nodes, query, src;
+bool Neg_cycle;
 
 void Bellman_Ford(ll src)
 {
     for(ll i=1; i<=nodes; i++)
     {
-           dis[i]=1e18;
+        dis[i]=1e18;
     }
     dis[src]=0;
     for(ll j=1; j<nodes; j++)
@@ -40,18 +42,43 @@ void Bellman_Ford(ll src)
         {
             if(dis[graph[i].u]+graph[i].cost<dis[graph[i].v])  ///Relaxation
             {
-                dis[graph[i].v] = dis[graph[i].u]+graph[i].cost;
+                dis[graph[i].v] = dis[graph[i].u]+graph[i].cost; ///updating distance
+                parent[graph[i].v] = graph[i].u;                 ///updating parent
             }
         }
     }
-    /*for(ll i=0; i<graph.size(); i++)
+    for(ll i=0; i<graph.size(); i++)
     {
-        if(dis[graph[i].u]+graph[i].cost<dis[graph[i].v])
+        if(dis[graph[i].u]+graph[i].cost<dis[graph[i].v])    ///Relaxation
         {
-            ///return Neg_cycle_Found
+            src = graph[i].v;
+            Neg_cycle = true;
+            dis[graph[i].v] = dis[graph[i].u]+graph[i].cost; ///updating distance
+            parent[graph[i].v] = graph[i].u;                 ///updating parent
         }
     }
-    */
+    if(!Neg_cycle)
+        printf("NO\n");
+    else
+    {
+        printf("YES\n");
+
+        for(ll i=0; i<graph.size(); i++)
+            src = parent[src];
+
+        vector<ll>path;
+        for(ll node=src; ;node=parent[node])
+        {
+            path.pb(node);
+            if(node==src&&path.size()>1)
+                break;
+        }
+
+        reverse all(path);
+        for(auto x: path)
+            printf("%lld ", x);
+    }
+
 }
 
 int main()
@@ -64,41 +91,19 @@ int main()
 #endif // Mfc_Tanzim
 
     ll t, u, v, w;
-    scanf("%lld", &t);
+    scanf("%lld %lld", &nodes, &edges);
 
-    while(t--)
+    for(ll i=0; i<edges; i++)
     {
-        graph.clear();
-        scanf("%lld", &nodes);
-        for(ll i=1; i<=nodes; i++)
-            cin >> arr[i];
-
-        scanf("%lld", &edges);
-        for(ll i=1; i<=edges; i++)
-        {
-            scanf("%lld %lld", &u, &v);
-            w = arr[v]-arr[u];
-            Info edge;
-            edge.u = u;
-            edge.v = v;
-            edge.cost=w*w*w;
-            graph.pb(edge);
-        }
-
-        Bellman_Ford(1);
-
-        scanf("%lld", &query);
-        printf("Case %lld:\n", ++cs);
-
-        while(query--)
-        {
-            scanf("%lld", &v);
-            if(dis[v]<3 || dis[v]==1e18)
-                printf("?\n");
-            else
-                printf("%lld\n", dis[v]);
-        }
+        scanf("%lld %lld %lld", &u, &v, &w);
+        Info edge;
+        edge.u = u;
+        edge.v = v;
+        edge.cost = w;
+        graph.pb(edge);
     }
+
+    Bellman_Ford(1);
 
     return 0;
 }
