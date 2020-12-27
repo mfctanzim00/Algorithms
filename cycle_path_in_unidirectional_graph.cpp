@@ -13,73 +13,81 @@
 #define   bug(a)     cerr << #a << " : " << a << endl
 using namespace std;
 const ll mod = 1e9+7;
-const ll mx = 2e5+10;
+const ll mx = 2e6+10;
 
-ll posx[] = {1,-1, 0, 0};
-ll posy[] = {0, 0, 1,-1};
-vector<int>graph[mx], ret;
-bool found = false, ok = false;
-int last_node = -1, vis[mx];
+int posx[] = {1,-1, 0, 0};
+int posy[] = {0, 0, 1,-1};
+vector<int>vis(mx), graph[mx], ok(mx);
+stack<int>st;
 
-void Dfs(int src)
+bool Dfs(int src)
 {
-    vis[src] = true;
+    vis[src]=true;
+    ok[src]=true;
+    st.push(src);
+
     for(auto x: graph[src]){
-              if(!vis[x]){
-                       Dfs(x);
-              }
-              else{
-                       ret.pb(x);
-                       ret.pb(src);
-                       last_node = x;
-                       return;
-              }
-              if(found){
-                       return;
-              }
-              if(~last_node){
-                       ret.pb(src);
-                       if(src==last_node){
-                                 found = true;
-                       }
-                       return;
-              }
+             if(!vis[x]){
+                    if(Dfs(x)){
+                           return true;
+                    }
+             }
+             if(ok[x]){
+                    st.push(x);
+                    return true;
+             }
     }
+    ok[src]=false;
+    st.pop();
+
+    return false;
 }
 
 int main()
 {
-     FastRead
+    FastRead
 
 #ifdef Mfc_Tanzim
     freopen("input.txt","r", stdin);
     // freopen("output.txt","w", stdout);
 #endif /// Mfc_Tanzim
 
-    int n, e;
-    cin >> n >> e;
-    while(e--){
-             int a, b;
-             cin >> a >> b;
-             graph[a].pb(b);
-    }
-    for(int i=1; i<=n&&!found; i++){
-             ret.clear();
-             if(!vis[i]){
-                      Dfs(i);
-             }
-    }
-    if(!found){
-             cout << "IMPOSSIBLE" << '\n';
-    }
-    else{
-             cout << ret.size() << '\n';
-             reverse all(ret);
-             for(auto x: ret){
-                        cout << x << " ";
-             }
-             cout << '\n';
-    }
+    int t=1, n, m, u, v;
+    //cin >> t;
 
+    while(t--){
+            cin >> n >> m;
+            for(int i=1; i<=m; i++){
+                     cin >> u >> v;
+                     graph[u].pb(v);
+            }
+
+            for(int i=1; i<=n; i++){
+                     if(!vis[i]){
+                            if(Dfs(i)){
+                                   break;
+                            }
+                     }
+            }
+
+            if(st.empty()){
+                     cout << "IMPOSSIBLE" << endl;
+                     continue;
+            }
+
+            vector<int>path;
+            int tmp=st.top();
+            while(!st.empty()){
+                    path.pb(st.top());
+                    st.pop();
+
+                    if(path.size()>1&&path.back()==tmp)
+                           break;
+            }
+            reverse all(path);
+            cout << path.size() << endl;
+            for(auto x: path)cout << x << " ";
+            cout << endl;
+    }
     return 0;
 }
