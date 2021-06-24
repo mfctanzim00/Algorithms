@@ -1,3 +1,6 @@
+
+/*  Problem Link : https://cses.fi/problemset/task/1753/   */
+
 #include<bits/stdc++.h>
 #include<cstring>
 //#define Mfc_Tanzim
@@ -40,6 +43,7 @@ ll get_hashval(string str)
 }
 ll SubstringHash(int l, int r)
 {
+    l++, r++;
     return (HASH[r] - (HASH[l-1]*pw[r-l+1])%mod + mod) % mod;
 }
 
@@ -62,7 +66,7 @@ int main()
     ll str_hash = get_hashval(str);
     ll ret = 0;
 
-    for(ll i=1; i+pattern_len-1<=str_len; i++){
+    for(ll i=0; i+pattern_len-1<str_len; i++){
                ll x = SubstringHash(i, i+pattern_len-1);
                if(x==pattern_hash){
                           ret++;
@@ -72,11 +76,10 @@ int main()
 
     return 0;
 }
+
 /*
 Main String: saippuakauppias
 Pattern String:  pp
-
 The Number of occurences of pattern_string in the main_string is : 2
-
 Output: 2
 */
